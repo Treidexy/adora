@@ -1,3 +1,4 @@
+import 'package:adora/adora_program.dart';
 import 'package:adora/editor/line_editor.dart';
 import 'package:flutter/material.dart';
 
@@ -43,10 +44,10 @@ class _SwapLineAction extends Action<SwapLineIntent> {
   }
 }
 
-class MainEditorData {}
-
 class MainEditor extends StatefulWidget {
-  const MainEditor({super.key});
+  final AdoraProgram program;
+
+  const MainEditor(this.program, {super.key});
 
   @override
   State createState() => _MainEditorState();
@@ -61,15 +62,7 @@ class _MainEditorState extends State<MainEditor> {
 
     lines = [
       LineData(
-        controller: TextEditingController(text: "hello, world!"),
-        focusNode: FocusNode(),
-      ),
-      LineData(
-        controller: TextEditingController(text: "goodbye, world!"),
-        focusNode: FocusNode(),
-      ),
-      LineData(
-        controller: TextEditingController(text: "ye u r heavenly gae"),
+        controller: TextEditingController(text: "(100, 20)"),
         focusNode: FocusNode(),
       ),
     ];
@@ -129,6 +122,10 @@ class _MainEditorState extends State<MainEditor> {
               data: line,
               onInsertLine: (_) {
                 newLineAndFocus(pos: i + 1);
+              },
+              onChangeLine: () {
+                widget.program
+                    .parse([for (var line in lines) line.controller.text]);
               },
             ),
           Row(

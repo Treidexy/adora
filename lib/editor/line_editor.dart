@@ -1,3 +1,4 @@
+import 'package:adora/adora_program.dart';
 import 'package:adora/editor/main_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,7 @@ class LineData {
 
 class LineEditor extends StatefulWidget {
   final void Function(String) onInsertLine;
+  final void Function() onChangeLine;
   final LineData data;
   final int lineNumber;
 
@@ -18,7 +20,8 @@ class LineEditor extends StatefulWidget {
       {super.key,
       required this.lineNumber,
       required this.data,
-      required this.onInsertLine});
+      required this.onInsertLine,
+      required this.onChangeLine});
 
   @override
   State createState() => _LineEditorState();
@@ -35,20 +38,25 @@ class _LineEditorState extends State<LineEditor> {
             SwapNeighborIntent(1),
       },
       child: Row(children: [
-        Text('${widget.lineNumber}'),
         SizedBox(
           width: 50,
-          child: IconButton(
-              onPressed: () {
-                setState(() {});
-              },
-              icon: const Icon(Icons.edit)),
+          child: Row(
+            children: [
+              Text('${widget.lineNumber}'),
+              IconButton(
+                  onPressed: () {
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.edit)),
+            ],
+          ),
         ),
         Expanded(
           child: TextField(
             controller: widget.data.controller,
             focusNode: widget.data.focusNode,
             onSubmitted: widget.onInsertLine,
+            onChanged: (_) => widget.onChangeLine(),
           ),
         ),
         IconButton(
