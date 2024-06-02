@@ -24,7 +24,6 @@ class AdoraProgram {
       points.add(Point(x, y));
     }
 
-    print(points);
     onChange();
   }
 }

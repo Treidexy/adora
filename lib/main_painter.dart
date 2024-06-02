@@ -8,6 +8,7 @@ class MainPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // print(canvas.getTransform());
     canvas.drawColor(const Color(0xFF404040), BlendMode.src);
 
     canvas.drawRect(
@@ -18,7 +19,7 @@ class MainPainter extends CustomPainter {
     for (var point in program.points) {
       canvas.drawCircle(
         Offset(point.x, point.y),
-        15,
+        5 / canvas.getTransform().first,
         Paint()..color = Colors.red,
       );
     }
