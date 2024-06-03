@@ -1,4 +1,4 @@
-import 'package:adora/adora_program.dart';
+import 'package:adora/editor/line_dialog.dart';
 import 'package:adora/editor/main_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,28 +6,36 @@ import 'package:flutter/services.dart';
 class LineData {
   TextEditingController controller;
   FocusNode focusNode;
+  Color color;
+  double stroke;
 
-  LineData({required this.controller, required this.focusNode});
+  LineData({
+    required this.controller,
+    required this.focusNode,
+    required this.color,
+    this.stroke = 5,
+  });
 }
 
-class LineEditor extends StatefulWidget {
-  final void Function(String) onInsertLine;
-  final void Function() onChangeLine;
+class LineEditor extends StatelessWidget {
+  final void Function(String) onInsert;
+  final void Function() onChange;
+  final void Function() onDelete;
   final LineData data;
   final int lineNumber;
 
-  const LineEditor(
-      {super.key,
-      required this.lineNumber,
-      required this.data,
-      required this.onInsertLine,
-      required this.onChangeLine});
+  final LineDialogCallbacks dialogCallbacks;
 
-  @override
-  State createState() => _LineEditorState();
-}
+  const LineEditor({
+    super.key,
+    required this.lineNumber,
+    required this.data,
+    required this.onInsert,
+    required this.onChange,
+    required this.onDelete,
+    required this.dialogCallbacks,
+  });
 
-class _LineEditorState extends State<LineEditor> {
   @override
   Widget build(BuildContext context) {
     return Shortcuts(
@@ -42,28 +50,36 @@ class _LineEditorState extends State<LineEditor> {
           width: 50,
           child: Row(
             children: [
-              Text('${widget.lineNumber}'),
+              Text('$lineNumber'),
               IconButton(
                   onPressed: () {
-                    setState(() {});
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            child: LineDialog(
+                              data: data,
+                              callbacks: dialogCallbacks,
+                            ),
+                          );
+                        });
                   },
-                  icon: const Icon(Icons.edit)),
+                  icon: Icon(
+                    Icons.edit,
+                    color: data.color,
+                  )),
             ],
           ),
         ),
         Expanded(
           child: TextField(
-            controller: widget.data.controller,
-            focusNode: widget.data.focusNode,
-            onSubmitted: widget.onInsertLine,
-            onChanged: (_) => widget.onChangeLine(),
+            controller: data.controller,
+            focusNode: data.focusNode,
+            onSubmitted: onInsert,
+            onChanged: (_) => onChange(),
           ),
         ),
-        IconButton(
-            onPressed: () {
-              setState(() {});
-            },
-            icon: const Icon(Icons.close)),
+        IconButton(onPressed: onDelete, icon: const Icon(Icons.close)),
       ]),
     );
   }

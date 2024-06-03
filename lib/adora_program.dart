@@ -1,27 +1,32 @@
-import 'dart:math';
+import 'dart:ui';
+
+import 'package:adora/editor/line_editor.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AdoraProgram {
-  final List<Point<double>> points = [];
+  final List<(Offset, Color, double)> points = [];
   final Function onChange;
 
   AdoraProgram({required this.onChange});
 
-  void parse(Iterable<String> lines) {
+  void parse(List<LineData> lines) {
     points.clear();
 
     for (var line in lines) {
-      line.trim();
-      int open = line.indexOf('(');
-      int comma = line.indexOf(',');
-      int close = line.indexOf(')');
+      var text = line.controller.text;
+      text.trim();
+      int open = text.indexOf('(');
+      int comma = text.indexOf(',');
+      int close = text.indexOf(')');
 
       if (open == -1 || comma == -1 || close == -1) {
         continue;
       }
 
-      double x = double.parse(line.substring(open + 1, comma));
-      double y = double.parse(line.substring(comma + 1, close));
-      points.add(Point(x, y));
+      double x = double.parse(text.substring(open + 1, comma));
+      double y = double.parse(text.substring(comma + 1, close));
+      points.add((Offset(x, y), line.color, line.stroke));
     }
 
     onChange();

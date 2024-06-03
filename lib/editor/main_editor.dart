@@ -1,4 +1,5 @@
 import 'package:adora/adora_program.dart';
+import 'package:adora/editor/line_dialog.dart';
 import 'package:adora/editor/line_editor.dart';
 import 'package:flutter/material.dart';
 
@@ -57,18 +58,6 @@ class _MainEditorState extends State<MainEditor> {
   List<LineData> lines = [];
 
   @override
-  void initState() {
-    super.initState();
-
-    lines = [
-      LineData(
-        controller: TextEditingController(text: "(100, 20)"),
-        focusNode: FocusNode(),
-      ),
-    ];
-  }
-
-  @override
   void dispose() {
     for (var line in lines) {
       line.focusNode.dispose();
@@ -85,6 +74,7 @@ class _MainEditorState extends State<MainEditor> {
           LineData(
             controller: TextEditingController(),
             focusNode: focusNode,
+            color: Colors.black,
           ));
       focusNode.requestFocus();
     });
@@ -120,13 +110,34 @@ class _MainEditorState extends State<MainEditor> {
             LineEditor(
               lineNumber: i,
               data: line,
-              onInsertLine: (_) {
+              onInsert: (_) {
                 newLineAndFocus(pos: i + 1);
               },
-              onChangeLine: () {
-                widget.program
-                    .parse([for (var line in lines) line.controller.text]);
+              onChange: () {
+                widget.program.parse(lines);
               },
+              onDelete: () {
+                setState(() {
+                  lines[i].focusNode.dispose();
+                  lines.removeAt(i);
+                });
+              },
+              dialogCallbacks: LineDialogCallbacks(
+                onChangeColor: (color) {
+                  setState(() {
+                    lines[i].color = color;
+                  });
+
+                  widget.program.parse(lines);
+                },
+                onChangeStroke: (stroke) {
+                  setState(() {
+                    lines[i].stroke = stroke;
+                  });
+
+                  widget.program.parse(lines);
+                },
+              ),
             ),
           Row(
             children: [

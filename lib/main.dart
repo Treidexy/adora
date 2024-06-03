@@ -28,8 +28,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final AdoraProgram program;
-  TransformationController transformationController =
+  final TransformationController transformationController =
       TransformationController();
+  final SplitViewController splitViewController =
+      SplitViewController(weights: [0.4], limits: [WeightLimit(min: 0.25)]);
+  final GlobalKey canvasKey = GlobalKey();
 
   @override
   void initState() {
@@ -46,17 +49,20 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: SplitView(
         viewMode: SplitViewMode.Horizontal,
-        controller: SplitViewController(limits: [WeightLimit(min: 0.25)]),
+        controller: splitViewController,
         children: [
           Padding(
               padding: const EdgeInsets.only(left: 5),
               child: MainEditor(program)),
           InteractiveViewer(
+            key: canvasKey,
             alignment: Alignment.center,
             constrained: false,
+            minScale: 0.001,
+            maxScale: double.maxFinite,
             transformationController: transformationController,
             boundaryMargin: const EdgeInsets.all(double.infinity),
-            child: CustomPaint(painter: MainPainter(program)),
+            child: CustomPaint(painter: MainPainter(program, canvasKey)),
           ),
         ],
       ),
