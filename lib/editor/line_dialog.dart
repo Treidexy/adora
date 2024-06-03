@@ -1,5 +1,7 @@
 import 'package:adora/editor/line_editor.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class LineDialogCallbacks {
   final void Function(Color) onChangeColor;
@@ -20,6 +22,9 @@ class LineDialog extends StatefulWidget {
 }
 
 class _LineDialogState extends State<LineDialog> {
+  late final TextEditingController strokeController =
+      TextEditingController(text: widget.data.stroke.toString());
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -44,16 +49,42 @@ class _LineDialogState extends State<LineDialog> {
               ),
           ],
         ),
-        Slider(
-          value: widget.data.stroke,
-          onChanged: (value) {
-            setState(() {
-              widget.callbacks.onChangeStroke(value);
-            });
-          },
-          min: 1,
-          max: 25,
-          label: '${widget.data.stroke}',
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SizedBox(
+                width: 50,
+                child: TextField(
+                  controller: strokeController,
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    double? d = double.tryParse(value);
+                    if (d != null) {
+                      setState(() {
+                        widget.callbacks.onChangeStroke(d);
+                      });
+                    }
+                  },
+                ),
+              ),
+            ),
+            Expanded(
+              child: Slider(
+                value: widget.data.stroke,
+                onChanged: (value) {
+                  setState(() {
+                    strokeController.text = value.toStringAsFixed(2);
+                    widget.callbacks.onChangeStroke(value);
+                  });
+                },
+                min: 1,
+                max: 25,
+                label: '${widget.data.stroke}',
+              ),
+            ),
+          ],
         ),
       ],
     );

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class LineData {
+  static const double defaultStroke = 5;
+
   TextEditingController controller;
   FocusNode focusNode;
   Color color;
@@ -13,7 +15,7 @@ class LineData {
     required this.controller,
     required this.focusNode,
     required this.color,
-    this.stroke = 5,
+    this.stroke = defaultStroke,
   });
 }
 
