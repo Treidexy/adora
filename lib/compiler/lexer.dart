@@ -2,50 +2,56 @@ import 'package:adora/compiler/token.dart';
 import 'package:flutter/material.dart';
 
 class Lexer {
-  final CharacterRange p;
+  final String src;
+  int i = 0;
 
-  Lexer(String src) : p = src.characters.iterator..moveNext();
+  String get current => src[i];
+  String get substring => src.substring(i);
+
+  Lexer(this.src);
 
   Token lexNext() {
-    while (p.current.contains(RegExp(r'\s'))) {
-      p.moveNext();
+    _match(r'\s+');
+
+    if (i == src.length) {
+      return EofToken();
     }
 
-    switch (p.current) {
+    switch (current) {
       case '(':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.lparen);
       case ')':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.rparen);
       case '[':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.lbracket);
       case ']':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.rbracket);
       case '{':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.lbrace);
       case '}':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.rbrace);
 
       case ',':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.comma);
       case ';':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.semicol);
       case ':':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.colon);
       case '.':
-        p.moveNext();
-        if (p.current == '.') {
-          p.moveBack();
-          if (p.current == '=') {
-            p.moveBack();
+        _next();
+        if (current == '.') {
+          _next();
+          if (current == '=') {
+            _next();
             return LiteralToken(TokenKind.dotdotequal);
           }
 
@@ -53,72 +59,64 @@ class Lexer {
         }
         return LiteralToken(TokenKind.dot);
       case '=':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.equal);
 
       case '+':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.plus);
       case '-':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.minus);
       case '*':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.star);
       case '/':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.slash);
       case '%':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.percent);
       case '|':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.pipe);
       case '^':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.caret);
       case '!':
-        p.moveNext();
+        _next();
         return LiteralToken(TokenKind.bang);
     }
 
-    if (p.current.contains(RegExp(r'\d'))) {
-      return lexNumber();
-    } else if (p.current.contains(RegExp(r'\w'))) {
-      return lexNameOrKeyword();
+    var match = _match(r'\d+(.\d+)?(e[\+-]\d+)?');
+    if (match != null) {
+      return NumberToken(double.parse(match));
     }
 
+    match = _match(r'[\w_]+');
+    if (match != null) {
+      return NameToken(match);
+    }
+
+    _next();
     return BadToken();
   }
 
-  NumberToken lexNumber() {
-    p.moveBack();
-    final str = RegExp(r'\d').matchAsPrefix(p.stringAfter)!.input;
-    p.moveNext(str.length);
-    return NumberToken(double.parse(str));
-  }
-
-  Token lexNameOrKeyword() {
-    p.moveBack();
-    final str = RegExp(r'\w').matchAsPrefix(p.stringAfter)!.input;
-    p.moveNext(str.length);
-
-    switch (str) {
-      case 'and':
-        return LiteralToken(TokenKind.andKw);
-      case 'or':
-        return LiteralToken(TokenKind.orKw);
-      case 'xor':
-        return LiteralToken(TokenKind.xorKw);
-
-      case 'with':
-        return LiteralToken(TokenKind.withKw);
-      case 'for':
-        return LiteralToken(TokenKind.withKw);
-      case 'is':
-        return LiteralToken(TokenKind.withKw);
+  String _next() {
+    final c = current;
+    if (++i > src.length) {
+      i = src.length;
     }
 
-    return NameToken(str);
+    return c;
+  }
+
+  String? _match(String regex) {
+    final match = RegExp(regex).matchAsPrefix(substring)?.group(0);
+    if (match != null) {
+      i += match.length;
+    }
+
+    return match;
   }
 }

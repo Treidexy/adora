@@ -1,5 +1,6 @@
 enum TokenKind {
   unknown,
+  eof,
   name,
   number,
 
@@ -47,6 +48,10 @@ abstract class Token {
 
 class BadToken extends Token {
   BadToken() : super(TokenKind.unknown);
+}
+
+class EofToken extends Token {
+  EofToken() : super(TokenKind.eof);
 }
 
 class LiteralToken extends Token {

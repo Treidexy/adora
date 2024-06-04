@@ -1,14 +1,16 @@
 import 'package:adora/adora_program.dart';
-import 'package:adora/compiler/lexer.dart';
+import 'package:adora/compiler/parser.dart';
+import 'package:adora/compiler/syntax.dart';
 import 'package:adora/editor/main_editor.dart';
 import 'package:adora/main_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:split_view/split_view.dart';
 
 void main() {
-  final lexer = Lexer("i*j for i = [0..4], j = [0..4]");
-  lexer.lexNext();
-  runApp(const MainApp());
+  final parser = Parser("xyx = 7.7");
+  print(parser.tokens);
+  print((parser.parse() as EqualSyntax).value);
+  // runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
