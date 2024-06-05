@@ -1,5 +1,5 @@
 import 'package:adora/compiler/lexer.dart';
-import 'package:adora/compiler/syntax.dart';
+import 'package:adora/compiler/expr.dart';
 import 'package:adora/compiler/token.dart';
 
 class Parser {
@@ -15,28 +15,74 @@ class Parser {
     } while (tokens.last.kind != TokenKind.eof);
   }
 
-  Syntax parse() {
+  Expr parse([int precedence = 0]) {
+    var begin = _parseTerm();
+
+    while (current.precedence > precedence) {
+      if (current.isChainOp) {
+        begin = _parseChain(begin);
+        continue;
+      }
+
+      if (current.isFoldOp) {
+        begin = _parseFold(begin);
+        continue;
+      }
+
+      if (current.isOp) {
+        final op = _next();
+        final right = parse(op.precedence);
+        begin = OpExpr(begin, op, right);
+        continue;
+      }
+    }
+
+    return begin;
+  }
+
+  Expr _parseTerm() {
     switch (current.kind) {
       case TokenKind.name:
         String name = (_next() as NameToken).name;
-        return _parseAfterName(name);
+        return NameExpr(name);
       case TokenKind.number:
         double value = (_next() as NumberToken).value;
-        return NumberSyntax(value);
+        return NumberExpr(value);
+      case TokenKind.lparen:
+        _next();
+        final inner = parse();
+        final close = _match(TokenKind.rparen);
+        if (close == null) {
+          throw Exception("undesirable outcome");
+        }
+        return inner;
       default:
-        return BadSyntax();
+        print('[Parser] bad token: $current');
+        return BadExpr();
     }
   }
 
-  Syntax _parseAfterName(String name) {
-    switch (current.kind) {
-      case TokenKind.equal:
-        _next();
-        final value = parse();
-        return EqualSyntax(name: name, value: value);
-      default:
-        return NameSyntax(name: name);
+  Expr _parseFold(Expr begin) {
+    List<Expr> list = [begin];
+    Token op = _next();
+
+    do {
+      list.add(parse(op.precedence));
+    } while (_matchExact(op) != null);
+
+    return FoldExpr(op, list);
+  }
+
+  Expr _parseChain(Expr begin) {
+    List<Expr> list = [begin];
+    List<Token> ops = [];
+
+    while (current.isChainOp) {
+      ops.add(_next());
+      list.add(parse(ops.last.precedence));
     }
+
+    return ChainExpr(ops, list);
   }
 
   Token _next() {
@@ -47,8 +93,16 @@ class Parser {
     return tokens[i++];
   }
 
-  Token? _match(List<TokenKind> kinds) {
-    if (kinds.contains(current.kind)) {
+  Token? _match(TokenKind kind) {
+    if (current.kind == kind) {
+      return _next();
+    }
+
+    return null;
+  }
+
+  Token? _matchExact(Token token) {
+    if (current == token) {
       return _next();
     }
 

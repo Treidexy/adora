@@ -1,5 +1,4 @@
 import 'package:adora/compiler/token.dart';
-import 'package:flutter/material.dart';
 
 class Lexer {
   final String src;
@@ -67,6 +66,10 @@ class Lexer {
         return LiteralToken(TokenKind.plus);
       case '-':
         _next();
+        if (current == '>') {
+          _next();
+          return LiteralToken(TokenKind.arrow);
+        }
         return LiteralToken(TokenKind.minus);
       case '*':
         _next();
@@ -86,6 +89,21 @@ class Lexer {
       case '!':
         _next();
         return LiteralToken(TokenKind.bang);
+
+      case '<':
+        _next();
+        if (current == '=') {
+          _next();
+          return LiteralToken(TokenKind.le);
+        }
+        return LiteralToken(TokenKind.lt);
+      case '>':
+        _next();
+        if (current == '=') {
+          _next();
+          return LiteralToken(TokenKind.ge);
+        }
+        return LiteralToken(TokenKind.gt);
     }
 
     var match = _match(r'\d+(.\d+)?(e[\+-]\d+)?');
