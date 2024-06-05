@@ -9,6 +9,14 @@ String prettyPrint(Expr expr, [String indent = '', bool isLast = true]) {
     out += 'Bad\n';
   } else if (expr is NumberExpr) {
     out += 'Number(${expr.value})\n';
+  } else if (expr is NameExpr) {
+    out += 'Name(${expr.name})\n';
+  } else if (expr is CallExpr) {
+    out += 'Call\n';
+    out += '$newIndent├─';
+    out += prettyPrint(expr.fn, newIndent, false);
+    out += '$newIndent╰─';
+    out += prettyPrint(expr.arg, newIndent, true);
   } else if (expr is FoldExpr) {
     out += 'Fold (${expr.op})\n';
 

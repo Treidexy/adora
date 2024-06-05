@@ -65,6 +65,10 @@ extension TokenExt on Token {
         TokenKind.caret,
         TokenKind.arrow,
         TokenKind.dot,
+        // Might move later...
+        TokenKind.forKw,
+        TokenKind.withKw,
+        TokenKind.isKw,
       ].contains(kind);
 
   bool get isChainOp => [
@@ -80,6 +84,10 @@ extension TokenExt on Token {
           TokenKind.comma,
         ],
         [
+          TokenKind.forKw,
+          TokenKind.withKw,
+        ],
+        [
           TokenKind.arrow,
         ],
         [
@@ -93,6 +101,9 @@ extension TokenExt on Token {
           TokenKind.gt,
           TokenKind.ge,
           TokenKind.equal,
+        ],
+        [
+          TokenKind.isKw,
         ],
         [
           TokenKind.pipe,

@@ -18,6 +18,11 @@ class Parser {
   Expr parse([int precedence = 0]) {
     var begin = _parseTerm();
 
+    if (current.kind == TokenKind.lparen) {
+      final arg = _parseTerm();
+      begin = CallExpr(begin, arg);
+    }
+
     while (current.precedence > precedence) {
       if (current.isChainOp) {
         begin = _parseChain(begin);

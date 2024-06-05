@@ -35,3 +35,10 @@ class ListExpr extends Expr {
 
   ListExpr(this.list);
 }
+
+class CallExpr extends Expr {
+  final Expr fn;
+  final Expr arg;
+
+  CallExpr(this.fn, this.arg);
+}
