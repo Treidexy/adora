@@ -73,9 +73,6 @@ extension TokenExt on Token {
         TokenKind.gt,
         TokenKind.ge,
         TokenKind.equal,
-        TokenKind.andKw,
-        TokenKind.orKw,
-        TokenKind.xorKw,
       ].contains(kind);
 
   int get precedence => [
@@ -95,6 +92,7 @@ extension TokenExt on Token {
           TokenKind.le,
           TokenKind.gt,
           TokenKind.ge,
+          TokenKind.equal,
         ],
         [
           TokenKind.pipe,

@@ -113,7 +113,22 @@ class Lexer {
 
     match = _match(r'[\w_]+');
     if (match != null) {
-      return NameToken(match);
+      switch (match) {
+        case 'and':
+          return LiteralToken(TokenKind.andKw);
+        case 'or':
+          return LiteralToken(TokenKind.orKw);
+        case 'xor':
+          return LiteralToken(TokenKind.xorKw);
+        case 'with':
+          return LiteralToken(TokenKind.withKw);
+        case 'for':
+          return LiteralToken(TokenKind.forKw);
+        case 'is':
+          return LiteralToken(TokenKind.isKw);
+        default:
+          return NameToken(match);
+      }
     }
 
     _next();
