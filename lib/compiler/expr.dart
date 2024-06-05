@@ -16,14 +16,6 @@ class NumberExpr extends Expr {
   NumberExpr(this.value);
 }
 
-class OpExpr extends Expr {
-  final Expr left;
-  final Token op;
-  final Expr right;
-
-  OpExpr(this.left, this.op, this.right);
-}
-
 class FoldExpr extends Expr {
   final Token op;
   final List<Expr> list;
@@ -36,4 +28,10 @@ class ChainExpr extends Expr {
   final List<Expr> list;
 
   ChainExpr(this.ops, this.list);
+}
+
+class ListExpr extends Expr {
+  final List<Expr> list;
+
+  ListExpr(this.list);
 }

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:split_view/split_view.dart';
 
 void main() {
-  final parser = Parser("42 * 5 ^ 4 ^ 8 * 7");
+  final parser = Parser("(5, 6) * 50");
   print(parser.tokens);
   final expr = parser.parse();
   // print(expr);

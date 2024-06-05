@@ -28,13 +28,6 @@ class Parser {
         begin = _parseFold(begin);
         continue;
       }
-
-      if (current.isOp) {
-        final op = _next();
-        final right = parse(op.precedence);
-        begin = OpExpr(begin, op, right);
-        continue;
-      }
     }
 
     return begin;

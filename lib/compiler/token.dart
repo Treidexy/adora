@@ -48,17 +48,7 @@ enum TokenKind {
 }
 
 extension TokenExt on Token {
-  bool get isOp =>
-      isFoldOp ||
-      isChainOp ||
-      [
-        TokenKind.minus,
-        TokenKind.slash,
-        TokenKind.percent,
-        TokenKind.caret,
-        TokenKind.arrow,
-        TokenKind.dot,
-      ].contains(kind);
+  bool get isOp => isFoldOp || isChainOp;
 
   bool get isFoldOp => [
         TokenKind.plus,
@@ -67,6 +57,14 @@ extension TokenExt on Token {
         TokenKind.andKw,
         TokenKind.orKw,
         TokenKind.xorKw,
+        TokenKind.comma,
+        // Non-Associative
+        TokenKind.minus,
+        TokenKind.slash,
+        TokenKind.percent,
+        TokenKind.caret,
+        TokenKind.arrow,
+        TokenKind.dot,
       ].contains(kind);
 
   bool get isChainOp => [
@@ -81,6 +79,9 @@ extension TokenExt on Token {
       ].contains(kind);
 
   int get precedence => [
+        [
+          TokenKind.comma,
+        ],
         [
           TokenKind.arrow,
         ],
