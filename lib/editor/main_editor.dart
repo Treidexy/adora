@@ -1,3 +1,4 @@
+import 'package:adora/editor/line_editor_feedback.dart';
 import 'package:adora/runner/adora_program.dart';
 import 'package:adora/editor/line_dialog.dart';
 import 'package:adora/editor/line_editor.dart';
@@ -97,6 +98,41 @@ class _MainEditorState extends State<MainEditor> {
     });
   }
 
+  LineEditor _lineWidget(int i, LineData data) {
+    return LineEditor(
+      lineNumber: i,
+      data: data,
+      onInsert: (_) {
+        newLineAndFocus(pos: i + 1);
+      },
+      onChange: () {
+        widget.program.parse(lines);
+      },
+      onDelete: () {
+        setState(() {
+          lines[i].focusNode.dispose();
+          lines.removeAt(i);
+        });
+      },
+      dialogCallbacks: LineDialogCallbacks(
+        onChangeColor: (color) {
+          setState(() {
+            lines[i].color = color;
+          });
+
+          widget.program.parse(lines);
+        },
+        onChangeStroke: (stroke) {
+          setState(() {
+            lines[i].stroke = stroke;
+          });
+
+          widget.program.parse(lines);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Actions(
@@ -106,39 +142,10 @@ class _MainEditorState extends State<MainEditor> {
       },
       child: ListView(
         children: [
-          for (var (i, line) in lines.indexed)
-            LineEditor(
-              lineNumber: i,
-              data: line,
-              onInsert: (_) {
-                newLineAndFocus(pos: i + 1);
-              },
-              onChange: () {
-                widget.program.parse(lines);
-              },
-              onDelete: () {
-                setState(() {
-                  lines[i].focusNode.dispose();
-                  lines.removeAt(i);
-                });
-              },
-              dialogCallbacks: LineDialogCallbacks(
-                onChangeColor: (color) {
-                  setState(() {
-                    lines[i].color = color;
-                  });
-
-                  widget.program.parse(lines);
-                },
-                onChangeStroke: (stroke) {
-                  setState(() {
-                    lines[i].stroke = stroke;
-                  });
-
-                  widget.program.parse(lines);
-                },
-              ),
-            ),
+          for (var (i, data) in lines.indexed)
+            Draggable(
+                feedback: LineEditorFeedback(data: data, lineNumber: i),
+                child: _lineWidget(i, data)),
           Row(
             children: [
               const SizedBox(
