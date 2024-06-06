@@ -106,7 +106,7 @@ class Lexer {
         return LiteralToken(TokenKind.gt);
     }
 
-    var match = _match(r'\d+(.\d+)?(e[\+-]\d+)?');
+    var match = _match(r'\d+(\.\d+)?(e[\+-]\d+)?');
     if (match != null) {
       return NumberToken(double.parse(match));
     }

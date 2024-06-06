@@ -1,4 +1,4 @@
-import 'package:adora/adora_program.dart';
+import 'package:adora/runner/adora_program.dart';
 import 'package:adora/editor/line_dialog.dart';
 import 'package:adora/editor/line_editor.dart';
 import 'package:flutter/material.dart';

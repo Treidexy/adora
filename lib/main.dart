@@ -1,4 +1,4 @@
-import 'package:adora/adora_program.dart';
+import 'package:adora/runner/adora_program.dart';
 import 'package:adora/compiler/parser.dart';
 import 'package:adora/compiler/pretty_print.dart';
 import 'package:adora/editor/main_editor.dart';
@@ -10,9 +10,8 @@ void main() {
   final parser = Parser("(a + b)(x)");
   print(parser.tokens);
   final expr = parser.parse();
-  // print(expr);
   print(prettyPrint(expr, '\t'));
-  // runApp(const MainApp());
+  runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {

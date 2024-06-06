@@ -1,4 +1,4 @@
-import 'package:adora/adora_program.dart';
+import 'package:adora/runner/adora_program.dart';
 import 'package:flutter/material.dart';
 
 class MainPainter extends CustomPainter {
@@ -61,7 +61,7 @@ class MainPainter extends CustomPainter {
       }
     }
 
-    for (var (pos, color, stroke) in program.points) {
+    for (var (pos, color, stroke) in program.state.points) {
       canvas.drawCircle(
         pos,
         stroke / scale,
