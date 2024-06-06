@@ -1,4 +1,3 @@
-import 'package:adora/editor/line_editor_feedback.dart';
 import 'package:adora/runner/adora_program.dart';
 import 'package:adora/editor/line_dialog.dart';
 import 'package:adora/editor/line_editor.dart';
@@ -142,10 +141,7 @@ class _MainEditorState extends State<MainEditor> {
       },
       child: ListView(
         children: [
-          for (var (i, data) in lines.indexed)
-            Draggable(
-                feedback: LineEditorFeedback(data: data, lineNumber: i),
-                child: _lineWidget(i, data)),
+          for (var (i, data) in lines.indexed) _lineWidget(i, data),
           Row(
             children: [
               const SizedBox(
