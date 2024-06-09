@@ -1,5 +1,6 @@
 import 'package:adora/compiler/lexer.dart';
 import 'package:adora/compiler/expr.dart';
+import 'package:adora/compiler/parse_error.dart';
 import 'package:adora/compiler/token.dart';
 
 class Parser {
@@ -51,12 +52,12 @@ class Parser {
         final inner = parse();
         final close = _match(TokenKind.rparen);
         if (close == null) {
-          throw Exception("undesirable outcome");
+          throw ParseError('unclosed paren');
         }
         return inner;
       default:
-        print('[Parser] bad token: $current');
-        return BadExpr();
+        throw ParseError('bad token: $current');
+      // return BadExpr();
     }
   }
 

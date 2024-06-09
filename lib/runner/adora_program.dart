@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:adora/compiler/expr.dart';
+import 'package:adora/compiler/parse_error.dart';
 import 'package:adora/compiler/parser.dart';
 import 'package:adora/compiler/pretty_print.dart';
 import 'package:adora/compiler/token.dart';
@@ -100,22 +101,27 @@ class AdoraProgram {
     for (var line in lines) {
       var text = line.controller.text;
 
-      final parser = Parser(text);
-      final expr = parser.parse();
-      print(prettyPrint(expr));
-      final value = eval(expr, Scope(null));
+      try {
+        final parser = Parser(text);
+        final expr = parser.parse();
+        print(prettyPrint(expr));
+        final value = eval(expr, state.mainScope);
 
-      if (value is ListValue && value.list.length == 2) {
-        final first = value.list[0];
-        final second = value.list[1];
+        if (value is ListValue && value.list.length == 2) {
+          final first = value.list[0];
+          final second = value.list[1];
 
-        if (first is NumberValue && second is NumberValue) {
-          state.points.add((
-            Offset(first.value, second.value),
-            line.color,
-            line.stroke,
-          ));
+          if (first is NumberValue && second is NumberValue) {
+            state.points.add((
+              Offset(first.value, second.value),
+              line.color,
+              line.stroke,
+            ));
+          }
         }
+      } on ParseError catch (e) {
+        print('[Parse Error] ${e.msg}');
+        continue;
       }
     }
 

@@ -4,7 +4,7 @@ class Lexer {
   final String src;
   int i = 0;
 
-  String get current => src[i];
+  String get current => i >= src.length ? '' : src[i];
   String get substring => src.substring(i);
 
   Lexer(this.src);
@@ -46,6 +46,11 @@ class Lexer {
         _next();
         return LiteralToken(TokenKind.colon);
       case '.':
+        var match = _match(r'\.\d+(e[\+-]\d+)?');
+        if (match != null) {
+          return NumberToken(double.parse(match));
+        }
+
         _next();
         if (current == '.') {
           _next();
@@ -56,6 +61,7 @@ class Lexer {
 
           return LiteralToken(TokenKind.dotdot);
         }
+
         return LiteralToken(TokenKind.dot);
       case '=':
         _next();
@@ -71,6 +77,13 @@ class Lexer {
           return LiteralToken(TokenKind.arrow);
         }
         return LiteralToken(TokenKind.minus);
+      case '~':
+        _next();
+        if (current == '>') {
+          _next();
+          return LiteralToken(TokenKind.squigglyArrow);
+        }
+        return BadToken();
       case '*':
         _next();
         return LiteralToken(TokenKind.star);

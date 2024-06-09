@@ -64,6 +64,7 @@ extension TokenExt on Token {
         TokenKind.percent,
         TokenKind.caret,
         TokenKind.arrow,
+        TokenKind.squigglyArrow,
         TokenKind.dot,
         // Might move later...
         TokenKind.forKw,
@@ -86,6 +87,9 @@ extension TokenExt on Token {
         [
           TokenKind.forKw,
           TokenKind.withKw,
+        ],
+        [
+          TokenKind.squigglyArrow,
         ],
         [
           TokenKind.arrow,
