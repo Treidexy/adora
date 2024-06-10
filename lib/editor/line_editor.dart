@@ -1,5 +1,6 @@
 import 'package:adora/editor/line_dialog.dart';
 import 'package:adora/editor/main_editor.dart';
+import 'package:adora/runner/value.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,11 +11,13 @@ class LineData {
   FocusNode focusNode;
   Color color;
   double stroke;
+  Value value;
 
   LineData({
     required this.controller,
     required this.focusNode,
     required this.color,
+    required this.value,
     this.stroke = defaultStroke,
   });
 }

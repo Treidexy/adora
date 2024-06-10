@@ -75,6 +75,7 @@ class _MainEditorState extends State<MainEditor> {
             controller: TextEditingController(),
             focusNode: focusNode,
             color: Colors.black,
+            value: widget.program.state.lines[pos ?? lines.length],
           ));
       focusNode.requestFocus();
     });

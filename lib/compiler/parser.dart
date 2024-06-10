@@ -69,6 +69,10 @@ class Parser {
       list.add(parse(op.precedence));
     } while (_matchExact(op) != null);
 
+    if (op.kind == TokenKind.comma) {
+      return ListExpr(list);
+    }
+
     return FoldExpr(op, list);
   }
 

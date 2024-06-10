@@ -21,9 +21,6 @@ class AdoraProgram {
 
   Value _simpleFoldEval(Token op, List<NumberValue> list) {
     switch (op.kind) {
-      case TokenKind.comma:
-        return ListValue(list);
-
       case TokenKind.plus:
         return NumberValue(list.fold(0, (a, b) => a + b.value));
       case TokenKind.minus:
@@ -59,6 +56,22 @@ class AdoraProgram {
       return scope.getVar(expr.name) ?? NullValue();
     }
 
+    if (expr is ListExpr) {
+      return ListValue([for (final item in expr.list) eval(item, scope)]);
+    }
+
+    if (expr is ChainExpr) {
+      if (expr.ops.length != 1 || expr.ops.first.kind != TokenKind.equal) {
+        return NullValue();
+      }
+
+      if (expr.list.first is! NameExpr) return NullValue();
+
+      final right = eval(expr.list[1], scope);
+      final nameToken = expr.list.first as NameExpr;
+      scope.addVar(nameToken.name, right);
+    }
+
     if (expr is FoldExpr) {
       if (expr.op.kind == TokenKind.withKw) {
         final inner = expr.list.first;
@@ -66,17 +79,7 @@ class AdoraProgram {
         final newScope = Scope(scope);
 
         for (final item in wlist.reversed) {
-          if (item is! ChainExpr) continue;
-
-          if (item.ops.length != 1 || item.ops.first.kind != TokenKind.equal) {
-            continue;
-          }
-
-          if (item.list.first is! NameExpr) continue;
-
-          final nameToken = item.list.first as NameExpr;
-          final right = eval(item.list[1], newScope);
-          newScope.addVar(nameToken.name, right);
+          eval(item, newScope);
         }
 
         return eval(inner, newScope);
@@ -97,6 +100,7 @@ class AdoraProgram {
 
   void parse(List<LineData> lines) {
     state.points.clear();
+    state.lines.clear();
 
     for (var line in lines) {
       var text = line.controller.text;
@@ -106,6 +110,7 @@ class AdoraProgram {
         final expr = parser.parse();
         print(prettyPrint(expr));
         final value = eval(expr, state.mainScope);
+        state.lines.add(value);
 
         if (value is ListValue && value.list.length == 2) {
           final first = value.list[0];
