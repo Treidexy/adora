@@ -24,13 +24,13 @@ class Parser {
       begin = CallExpr(begin, arg);
     }
 
-    while (current.precedence > precedence) {
-      if (current.isChainOp) {
+    while (current.kind.precedence > precedence) {
+      if (current.kind.isChainOp) {
         begin = _parseChain(begin);
         continue;
       }
 
-      if (current.isFoldOp) {
+      if (current.kind.isFoldOp) {
         begin = _parseFold(begin);
         continue;
       }
@@ -66,7 +66,7 @@ class Parser {
     Token op = _next();
 
     do {
-      list.add(parse(op.precedence));
+      list.add(parse(op.kind.precedence));
     } while (_matchExact(op) != null);
 
     if (op.kind == TokenKind.comma) {
@@ -80,9 +80,9 @@ class Parser {
     List<Expr> list = [begin];
     List<Token> ops = [];
 
-    while (current.isChainOp) {
+    while (current.kind.isChainOp) {
       ops.add(_next());
-      list.add(parse(ops.last.precedence));
+      list.add(parse(ops.last.kind.precedence));
     }
 
     return ChainExpr(ops, list);

@@ -47,7 +47,7 @@ enum TokenKind {
   isKw;
 }
 
-extension TokenExt on Token {
+extension TokenExt on TokenKind {
   bool get isOp => isFoldOp || isChainOp;
 
   bool get isFoldOp => [
@@ -70,7 +70,7 @@ extension TokenExt on Token {
         TokenKind.forKw,
         TokenKind.withKw,
         TokenKind.isKw,
-      ].contains(kind);
+      ].contains(this);
 
   bool get isChainOp => [
         TokenKind.lt,
@@ -78,7 +78,7 @@ extension TokenExt on Token {
         TokenKind.gt,
         TokenKind.ge,
         TokenKind.equal,
-      ].contains(kind);
+      ].contains(this);
 
   int get precedence => [
         [
@@ -129,7 +129,7 @@ extension TokenExt on Token {
         ]
       ].indexed.fold(
             0,
-            (a, combo) => max(a, combo.$2.contains(kind) ? combo.$1 + 1 : 0),
+            (a, combo) => max(a, combo.$2.contains(this) ? combo.$1 + 1 : 0),
           );
 }
 

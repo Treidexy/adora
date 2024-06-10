@@ -44,7 +44,7 @@ class AdoraProgram {
               .fold(list.first.value, (a, b) => pow(a, b.value) as double),
         );
       default:
-        return NullValue();
+        return ErrorValue('bad fold ($op)');
     }
   }
 
@@ -53,7 +53,8 @@ class AdoraProgram {
       return NumberValue(expr.value);
     }
     if (expr is NameExpr) {
-      return scope.getVar(expr.name) ?? NullValue();
+      return scope.getVar(expr.name) ??
+          ErrorValue('`${expr.name}` not in scope');
     }
 
     if (expr is ListExpr) {
@@ -62,7 +63,7 @@ class AdoraProgram {
 
     if (expr is ChainExpr) {
       if (expr.ops.length != 1 || expr.ops.first.kind != TokenKind.equal) {
-        return NullValue();
+        return ErrorValue('bad chain $expr');
       }
 
       if (expr.list.first is! NameExpr) return NullValue();
@@ -93,6 +94,20 @@ class AdoraProgram {
       }
 
       return NullValue();
+    }
+
+    if (expr is CallExpr) {
+      final fn = eval(expr.fn, scope);
+      final arg = eval(expr.arg, scope);
+
+      if (fn is! ListValue) return NullValue();
+      if (arg is! NumberValue) return NullValue();
+
+      final idx = arg.value.toInt();
+
+      if (idx < 0 || idx >= fn.list.length) return NullValue();
+
+      return fn.list[arg.value.toInt()];
     }
 
     return NullValue();
